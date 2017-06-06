@@ -17,7 +17,7 @@ giving the opposite advice! :) ):
 
 ## Indentation and formatting
 
-* Let"s address the elephant in the room first. LuaRocks is indented with 3 spaces.
+* Let's address the elephant in the room first. LuaRocks is indented with 3 spaces.
 
 ```lua
 for i, pkg in ipairs(packages) do
