@@ -103,7 +103,7 @@ end
 
 * Variables and function names should use `snake_case`.
 
-```
+```lua
 -- bad
 local OBJEcttsssss = {}
 local thisIsMyObject = {}
@@ -129,8 +129,7 @@ only uppercase the first letter (`XmlDocument`). Methods use `snake_case` too.
 In LuaRocks, this is used in the `Api` object in the `luarocks.upload.api`
 module.
 
-```
--- good
+```lua
 for _, name in pairs(names) do
    -- ...stuff...
 end
@@ -258,7 +257,7 @@ end
 
 * Use dot notation when accessing known properties.
 
-```
+```lua
 local luke = {
    jedi = true,
    age = 28,
@@ -273,7 +272,7 @@ local is_jedi = luke.jedi
 
 * Use subscript notation `[]` when accessing properties with a variable or if using a table as a list.
 
-```
+```lua
 local vehicles = load_vehicles_from_disk("vehicles.dat")
 
 if vehicles["Porsche"] then
@@ -520,7 +519,7 @@ replacing `x` with `xy` in the `using_a_callback` example above).
 
 * The concatenation operator gets a pass for avoiding spaces:
 
-```
+```lua
 -- okay
 local message = "Hello, "..user.."! This is your day # "..day.." in our platform!"
 ```
@@ -564,7 +563,7 @@ end
 
 * Avoid aligning variable declarations:
 
-```
+```lua
 -- bad
 local a               = 1
 local long_identifier = 2
@@ -578,7 +577,7 @@ local long_identifier = 2
 
 * Alignment is occasionally useful when logical correspondence is to be highlighted:
 
-```
+```lua
 -- okay
 sys_command(form, UI_FORM_UPDATE_NODE, "a",      FORM_NODE_HIDDEN,  false)
 sys_command(form, UI_FORM_UPDATE_NODE, "sample", FORM_NODE_VISIBLE, false)
@@ -666,7 +665,7 @@ end
 
 * Create classes like this:
 
-```
+```lua
 --- @module myproject.myclass
 local myclass = {}
 
