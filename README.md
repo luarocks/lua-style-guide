@@ -14,6 +14,7 @@ giving the opposite advice! :) ):
 * https://github.com/Olivine-Labs/lua-style-guide/
 * https://github.com/zaki/lua-style-guide
 * http://lua-users.org/wiki/LuaStyleGuide
+* http://sputnik.freewisdom.org/en/Coding_Standard
 
 ## Indentation and formatting
 
@@ -689,6 +690,10 @@ end
 
 return myclass
 ```
+
+* The class table and the class metatable should both be local. If containing
+metamethods, the metatable may be declared as a top-level local, named
+`MyClass_mt`.
 
 > **Rationale:** It’s easy to see in the code above that the functions with
 `MyClass` in their signature are methods. A deeper discussion of the
