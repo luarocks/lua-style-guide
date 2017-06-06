@@ -4,7 +4,7 @@
 This style guides lists the coding conventions used in the
 [LuaRocks](http://github.com/luarocks/luarocks) project. It does not claim to
 be the best Lua coding style in the planet, but it is used successfully in a
-long-running project, and we do provide rationale for most of the design
+long-running project, and we do provide rationale for many of the design
 decisions listed below.
 
 The list of recommendations in this document was based on the ones mentioned
@@ -15,7 +15,7 @@ giving the opposite advice! :) ):
 * https://github.com/zaki/lua-style-guide
 * http://lua-users.org/wiki/LuaStyleGuide
 
-# Indentation and formatting
+## Indentation and formatting
 
 * Let"s address the elephant in the room first. LuaRocks is indented with 3 spaces.
 
@@ -29,16 +29,16 @@ for i, pkg in ipairs(packages) do
 end
 ```
 
-* One should not use tabs for indentation, or mix it with spaces.
-
-*Rationale:* There is no agreement in the Lua community as for indentation, so
+> **Rationale:** There is no agreement in the Lua community as for indentation, so
 3 spaces lies nicely as a middle ground between the 2-space camp and the
 4-space camp. Also, for a language that nests with `do`/`end` blocks, it
 produces pleasant-looking block-closing staircases, as in the example above.
 
+* One should not use tabs for indentation, or mix it with spaces.
+
 * Use LF (Unix) line endings.
 
-# Comments
+## Comments
 
 * Use a space after `--`. 
 
@@ -81,7 +81,7 @@ the implementation should be simple enough so that comments aren't needed. If
 the function grows complex, split it into multiple functions so that their names
 explain what each part does.
 
-# Variable names
+## Variable names
 
 * Variable names with larger scope should be more descriptive than those with
 smaller scope. One-letter variable names should be avoided except for very
@@ -89,6 +89,17 @@ small scopes (less than ten lines) or for iterators.
 
 * `i` should be used only as a counter variable in for loops (either numeric for
 or `ipairs`).
+
+* Prefer more descriptive names than `k` and `v` when iterating with `pairs`,
+unless you are writing a function that operates on generic tables.
+
+* Use `_` for ignored variables (e.g. in for loops:)
+
+```lua
+for _, item in ipairs(items) do
+   do_something_with_item(item)
+end
+```
 
 * Variables and function names should use `snake_case`.
 
@@ -108,17 +119,15 @@ local function do_that_thing()
 end
 ```
 
-* When doing OOP, classes should use `CamelCase`. Acronyms (e.g. XML) should
-only uppercase the first letter (`XmlDocument`). Methods use `snake_case` too.
-In LuaRocks, this is used in the `Api` object in the `luarocks.upload.api`
-module.
-
-*Rationale:* The standard library uses lowercase APIs, with `joinedlowercase`
+> **Rationale:** The standard library uses lowercase APIs, with `joinedlowercase`
 names, but this does not scale too well for more complex APIs. `snake_case`
 tends to look good enough and not too out-of-place along side the standard
 APIs.
 
-* Use underscores for ignored variables in loops.
+* When doing OOP, classes should use `CamelCase`. Acronyms (e.g. XML) should
+only uppercase the first letter (`XmlDocument`). Methods use `snake_case` too.
+In LuaRocks, this is used in the `Api` object in the `luarocks.upload.api`
+module.
 
 ```
 -- good
@@ -141,13 +150,15 @@ local function is_evil(alignment)
 end
 ```
 
-* `UPPER_CASE` is to be used sparingly with "constants" (since Lua does not have
-real constants). It is most useful in libraries that bind C libraries, when bringing
-over constants from C.
+* `UPPER_CASE` is to be used sparingly, with "constants" only.
+
+> **Rationale:** "Sparingly", since Lua does not have real constants. This
+notation is most useful in libraries that bind C libraries, when bringing over
+constants from C.
 
 * Do not use uppercase names starting with `_`, they are reserved by Lua.
 
-# Tables
+## Tables
 
 * When creating a table, prefer populating its fields all at once, if possible:
 
@@ -160,7 +171,7 @@ local player = {
 
 * You can add a trailing comma to all fields, including the last one.
 
-*Rationale:* This makes the structure of your tables more evident at a glance.
+> **Rationale:** This makes the structure of your tables more evident at a glance.
 Trailing commas make it quicker to add new fields and produces shorter diffs.
 
 * Use plain `key` syntax whenever possible, use `["key"]` syntax when using names
@@ -175,7 +186,7 @@ table = {
 }
 ```
 
-# Strings
+## Strings
 
 * Use `"double quotes"` for strings; use `'single quotes'` when writing strings
 that contain double quotes.
@@ -185,11 +196,11 @@ local name = "LuaRocks"
 local sentence = 'The name of the program is "LuaRocks"'
 ```
 
-*Rationale:* Double quotes are used as string delimiters in a larger number of
+> **Rationale:** Double quotes are used as string delimiters in a larger number of
 programming languages. Single quotes are useful for avoiding escaping when
 using double quotes in literals.
 
-# Line lengths
+## Line lengths
 
 * There are no hard or soft limits on line lengths. Line lengths are naturally
 limited by using one statement per line. If that still produces lines that are
@@ -197,11 +208,11 @@ too long (e.g. an expression that produces a line over 256-characters long,
 for example), this means the expression is too complex and would do better
 split into subexpressions with reasonable names.
 
-*Rationale:* No one works on VT100 terminals anymore. If line lengths are a proxy
+> **Rationale:** No one works on VT100 terminals anymore. If line lengths are a proxy
 for code complexity, we should address code complexity instead of using line
 breaks to fit mind-bending statements over multiple lines.
 
-# Function declaration syntax
+## Function declaration syntax
 
 * Prefer function syntax over variable syntax. This helps differentiate between
 named and anonymous functions.
@@ -243,7 +254,7 @@ local function is_good_name(name, options, args)
 end
 ```
 
-# Table attributes
+## Table attributes
 
 * Use dot notation when accessing known properties.
 
@@ -274,10 +285,10 @@ for name, cars in pairs(vehicles) do
 end
 ```
 
-*Rationale:* Using dot notation makes it clearer that the given key is meant
+> **Rationale:** Using dot notation makes it clearer that the given key is meant
 to be used as a record/object field.
 
-# Functions in tables
+## Functions in tables
 
 * When declaring modules and classes, declare functions external to the table definition:
 
@@ -302,7 +313,7 @@ local version_mt = {
 }
 ```
 
-*Rationale:* Metatables contain special behavior that affect the tables
+> **Rationale:** Metatables contain special behavior that affect the tables
 they're assigned (and are used implicitly at the call site), so it's good to
 be able to get a view of the complete behavior of the metatable at a glance.
 
@@ -312,7 +323,7 @@ the table does not gain much: when scrolling a longer file, it is more evident
 that `check_version` is a method of `Api` if it says `function Api:check_version()`
 than if it says `check_version = function()` under some indentation level.
 
-# Variable declaration
+## Variable declaration
 
 * Always use `local` to declare variables. 
 
@@ -324,10 +335,10 @@ superpower = get_superpower()
 local superpower = get_superpower()
 ```
 
-*Rationale:* Not doing so will result in global variables to avoid polluting
+> **Rationale:** Not doing so will result in global variables to avoid polluting
 the global namespace. 
 
-# Variable scope
+## Variable scope
 
 * Assign variables with the smallest possible scope.
 
@@ -365,10 +376,10 @@ local bad = function()
 end
 ```
 
-*Rationale:* Lua has proper lexical scoping. Declaring the function later means that its
+> **Rationale:** Lua has proper lexical scoping. Declaring the function later means that its
 scope is smaller, so this makes it easier to check for the effects of a variable.
 
-# Conditional expressions
+## Conditional expressions
 
 * False and nil are falsy in conditional expressions. Use shortcuts when you
 can, unless you need to know the difference between false and nil.
@@ -406,7 +417,7 @@ Note that the `x and y or z` as a substitute for `x ? y : z` does not work if
 `y` may be `nil` or `false` so avoid it altogether for returning booleans or
 values which may be nil.
 
-# Blocks
+## Blocks
 
 * Use single-line blocks only for `then return`, `then break` and `function return` (a.k.a "lambda") constructs:
 
@@ -448,7 +459,7 @@ a = 1
 b = 2
 ```
 
-# Spacing
+## Spacing
 
 * Always put a space after commas and between operators and assignment signs:
 
@@ -503,7 +514,7 @@ using_a_callback(x, function(...)
 end)
 ```
 
-*Rationale:* This keep indentation levels aligned at predictable places. You don't
+> **Rationale:** This keep indentation levels aligned at predictable places. You don't
 need to realign the entire block if something in the first line changes (such as
 replacing `x` with `xy` in the `using_a_callback` example above).
 
@@ -514,7 +525,7 @@ replacing `x` with `xy` in the `using_a_callback` example above).
 local message = "Hello, "..user.."! This is your day # "..day.." in our platform!"
 ```
 
-*Rationale:* Being at the baseline, the dots already provide some visual spacing.
+> **Rationale:** Being at the baseline, the dots already provide some visual spacing.
 
 * No spaces after the name of a function in a declaration or in its arguments:
 
@@ -563,7 +574,7 @@ local a = 1
 local long_identifier = 2
 ```
 
-*Rationale:* This produces extra diffs which add noise to `git blame`.
+> **Rationale:** This produces extra diffs which add noise to `git blame`.
 
 * Alignment is occasionally useful when logical correspondence is to be highlighted:
 
@@ -573,7 +584,7 @@ sys_command(form, UI_FORM_UPDATE_NODE, "a",      FORM_NODE_HIDDEN,  false)
 sys_command(form, UI_FORM_UPDATE_NODE, "sample", FORM_NODE_VISIBLE, false)
 ```
 
-# Typing
+## Typing
 
 * In non-performance critical code, it can be useful to add type-checking assertions
 for function arguments:
@@ -587,7 +598,7 @@ function manif.load_manifest(repo_url, lua_version)
 end
 ```
 
-*Rationale:* This is a practice adopted early on in the development of LuaRocks
+> **Rationale:** This is a practice adopted early on in the development of LuaRocks
 that has shown to be beneficial in many occasions.
 
 * Use the standard functions for type conversion, avoid relying on coercion:
@@ -600,7 +611,7 @@ local total_score = review_score .. ""
 local total_score = tostring(review_score)
 ```
 
-# Modules
+## Modules
 
 Follow [these guidelines](http://hisham.hm/2014/01/02/how-to-write-lua-modules-in-a-post-module-world/) for writing modules. In short:
 
@@ -619,7 +630,7 @@ bar.say("hello") -- using the module
 local skt = require("socket")
 ```
 
-*Rationale:* C is much harder to read if we have to keep going back to the top
+> **Rationale:** C is much harder to read if we have to keep going back to the top
 to check how you chose to call a module.
 
 * Start a module by declaring its table using the same all-lowercase local
@@ -647,11 +658,11 @@ function bar.say(greeting)
 end
 ```
 
-*Rationale:* Visibility rules are made explicit through syntax. 
+> **Rationale:** Visibility rules are made explicit through syntax. 
 
 * Do not set any globals in your module and always return a table in the end.
 
-# OOP
+## OOP
 
 * Create classes like this:
 
@@ -680,11 +691,11 @@ end
 return myclass
 ```
 
-*Rationale:* It’s easy to see in the code above that the functions with
+> **Rationale:** It’s easy to see in the code above that the functions with
 `MyClass` in their signature are methods. A deeper discussion of the
 design rationale for this is found [here](http://hisham.hm/2014/01/02/how-to-write-lua-modules-in-a-post-module-world/).
 
-# File structure
+## File structure
 
 * Lua files should be named in all lowercase.
 
@@ -695,3 +706,4 @@ should be called `modulename.lua`.
 [Busted](http://olivinelabs.com/busted/) for testing.
 
 * Executables are in `src/bin` directory.
+
