@@ -630,7 +630,7 @@ bar.say("hello") -- using the module
 local skt = require("socket")
 ```
 
-> **Rationale:** C is much harder to read if we have to keep going back to the top
+> **Rationale:** Code is much harder to read if we have to keep going back to the top
 to check how you chose to call a module.
 
 * Start a module by declaring its table using the same all-lowercase local
