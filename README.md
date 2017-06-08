@@ -615,7 +615,7 @@ local total_score = tostring(review_score)
 
 Follow [these guidelines](http://hisham.hm/2014/01/02/how-to-write-lua-modules-in-a-post-module-world/) for writing modules. In short:
 
-* Always require a module into a local named after the last component of the module’s full name.
+* Always require a module into a local variable named after the last component of the module’s full name.
 
 ```lua
 local bar = require("foo.bar") -- requiring the module
