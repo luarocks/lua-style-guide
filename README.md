@@ -15,6 +15,7 @@ giving the opposite advice! :) ):
 * https://github.com/zaki/lua-style-guide
 * http://lua-users.org/wiki/LuaStyleGuide
 * http://sputnik.freewisdom.org/en/Coding_Standard
+* https://gist.github.com/catwell/b3c01dbea413aa78675740546dfd5ce2
 
 ## Indentation and formatting
 
@@ -39,14 +40,7 @@ produces pleasant-looking block-closing staircases, as in the example above.
 
 * Use LF (Unix) line endings.
 
-## Comments
-
-* Use a space after `--`. 
-
-```lua
---bad
--- good
-```
+## Documentation
 
 * Document function signatures using
 [LDoc](https://stevedonovan.github.io/ldoc/). Specifying typing information
@@ -253,6 +247,38 @@ local function is_good_name(name, options, args)
    return true
 end
 ```
+
+## Function calls
+
+* Even though Lua allows it, do not omit parenthesis for functions that take a
+unique string literal argument. 
+
+```lua
+-- bad
+local data = get_data"KRP"..tostring(area_number)
+-- good
+local data = get_data("KRP"..tostring(area_number))
+local data = get_data("KRP")..tostring(area_number)
+```
+
+> **Rationale:** It is not obvious at a glace what the precedence rules are
+when omitting the parentheses in a function call. Can you quickly tell which
+of the two "good" examples in equivalent to the "bad" one? (It's the second
+one).
+
+* You should not omit parenthesis for functions that take a unique table
+argument on a single line. You may do so for table arguments that span several
+lines.
+
+```lua
+local an_instance = a_module.new {
+   a_parameter = 42,
+   another_parameter = "yay",
+}
+```
+
+> **Rationale:** The use as in `a_module.new` above occurs alone in a statement,
+so there are no precedence issues.
 
 ## Table attributes
 
@@ -461,6 +487,13 @@ b = 2
 
 ## Spacing
 
+* Use a space after `--`. 
+
+```lua
+--bad
+-- good
+```
+
 * Always put a space after commas and between operators and assignment signs:
 
 ```lua
@@ -611,6 +644,15 @@ local total_score = review_score .. ""
 local total_score = tostring(review_score)
 ```
 
+## Errors
+
+* Functions that can fail for reasons that are expected (e.g. I/O) should
+return `nil` and a (string) error message on error, possibly followed by other
+return values such as an error code.
+
+* On errors such as API misuse, an error should be thrown, either with `error()`
+or `assert()`.
+
 ## Modules
 
 Follow [these guidelines](http://hisham.hm/2014/01/02/how-to-write-lua-modules-in-a-post-module-world/) for writing modules. In short:
@@ -662,6 +704,33 @@ end
 
 * Do not set any globals in your module and always return a table in the end.
 
+* If you would like your module to be used as a function, you may set the
+`__call` metamethod on the module table instead.
+
+> **Rationale:** Modules should return tables in order to be amenable to have their
+contents inspected via the Lua interactive interpreter or other tools.
+
+* Requiring a module should cause no side-effect other than loading other
+modules and returning the module table.
+
+* A module should not have state (this still needs to be fixed for some
+LuaRocks modules). If a module needs configuration, turn it into a factory.
+For example, do not make something like this:
+
+```lua
+-- bad
+local mp = require "MessagePack"
+mp.set_integer("unsigned")
+```
+
+and do something like this instead:
+
+```lua
+-- good
+local messagepack = require "messagepack"
+local mpack = messagepack.new({integer = "unsigned"})
+```
+
 ## OOP
 
 * Create classes like this:
@@ -699,6 +768,30 @@ metamethods, the metatable may be declared as a top-level local, named
 `MyClass` in their signature are methods. A deeper discussion of the
 design rationale for this is found [here](http://hisham.hm/2014/01/02/how-to-write-lua-modules-in-a-post-module-world/).
 
+* Use the method notation when invoking methods:
+
+```
+-- bad 
+my_object.my_method(my_object)
+-- good
+my_object:my_method()
+```
+
+> **Rationale:** This makes it explicit that the intent is to use the function as an OOP method.
+
+* Do not rely on the `__gc` metamethod to release resources other than memory.
+If your object manage resources such as files, add a `close` method to their
+APIs and do not auto-close via `__gc`. Auto-closing via `__gc` would entice
+users of your module to not close resources as soon as possible. (Note that
+the standard `io` library does not follow this recommendation, and users often
+forget that not closing files immediately can lead to "too many open files"
+errors when the program runs for a while.)
+
+> **Rationale:** The garbage collector performs automatic *memory* management,
+dealing with memory only. There is no guarantees as to when the garbage
+collector will be invoked, and memory pressure does not correlate to pressure
+on other resources. 
+
 ## File structure
 
 * Lua files should be named in all lowercase.
@@ -710,4 +803,49 @@ should be called `modulename.lua`.
 [Busted](http://olivinelabs.com/busted/) for testing.
 
 * Executables are in `src/bin` directory.
+
+## Static checking
+
+It's best if code passes [luacheck](https://github.com/mpeterv/luacheck). If
+it does not with default settings, it should provide a `.luacheckrc` with
+sensible exceptions.
+
+* luacheck warnings of class 6xx refer to whitespace issues and can be
+ignored. Do not send pull requests "fixing" trailing whitespaces.
+
+> **Rationale:** Git is paranoid about trailing whitespace due to the
+patch-file email-based workflow inherited from the Linux kernel mailing list.
+When using the Git tool proper, exceeding whitespace makes no difference
+whatsoever except for being highlighted by Git's coloring (for the aforementioned
+reasons). Git's pedantism about it has spread over the year to the syntax
+highlighting of many text editors and now everyone says they hate trailing
+whitespace without being really able to answer why (the actual cause being
+that tools complain to them about it, for no good reason).
+
+* luacheck warnings of class 211, 212, 213 (unused variable, argument or loop
+variable) should be ignored, if the unused variable was added explicitly: for
+example, sometimes it is useful, for code understandability, to spell out what
+the keys and values in a table are, even if you're only using one of them.
+Another example is a function that needs to follow a given signature for API
+reasons (e.g. a callback that follows a given format) but doesn't use some of
+its arguments; it's better to spell out in the argument what the API the
+function implements is, instead of adding `_` variables.
+
+* luacheck warning 542 (empty if branch) can also be ignored, when a sequence
+of `if`/`elseif`/`else` blocks implements a "switch/case"-style list of cases,
+and one of the cases is meant to mean "pass". For example:
+
+```lua
+if warning >= 600 and warning <= 699 then
+   print("no whitespace warnings")
+elseif warning == 542 then
+   -- pass
+else
+   print("got a warning: "..warning)
+end
+```
+
+> **Rationale:** This avoids writing negated conditions in the final fallback
+case, and it's easy to add another case to the construct without having to
+edit the fallback.
 
