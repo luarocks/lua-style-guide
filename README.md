@@ -727,9 +727,21 @@ and do something like this instead:
 
 ```lua
 -- good
-local messagepack = require "messagepack"
+local messagepack = require("messagepack")
 local mpack = messagepack.new({integer = "unsigned"})
 ```
+
+* The invocation of require should look like a regular Lua function call, because it is.
+
+```lua
+-- bad
+local bla = require"bla"
+
+-- good
+local bla = require("bla")
+```
+
+> **Rationale:** This makes it explicit that require is a function call and not a keyword. Many other languages employ keywords for this purpose, so having a "special syntax" for require would trip up Lua newcomers.
 
 ## OOP
 
