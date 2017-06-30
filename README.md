@@ -735,7 +735,7 @@ local mpack = messagepack.new({integer = "unsigned"})
 
 ```lua
 -- bad
-local bla = require"bla"
+local bla = require "bla"
 
 -- good
 local bla = require("bla")
