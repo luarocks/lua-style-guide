@@ -66,7 +66,7 @@ to be implemented later. `FIXME` indicates a problem in the existing code
 ```lua
 -- TODO: implement method
 local function something()
-  -- FIXME: check conditions
+   -- FIXME: check conditions
 end
 ```
 
