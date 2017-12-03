@@ -239,7 +239,7 @@ end
 -- good
 local function is_good_name(name, options, args)
    if #name < 3 or #name > 30 then
-      return false end
+      return false
    end
 
    -- ...stuff...
