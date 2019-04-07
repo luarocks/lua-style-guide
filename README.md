@@ -765,7 +765,7 @@ end
 
 function myclass.new()
    local self = {}
-   setmetatable(self, { __index = MyClass })
+   setmetatable(self, {__index = MyClass})
    return self
 end
 
